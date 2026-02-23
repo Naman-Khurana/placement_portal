@@ -1,12 +1,13 @@
 from .extensions import db
-from enum.role import RoleEnum
+from .enums.role import RoleEnum 
 from datetime import datetime,date
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model):
     __tablename__ = "user"
     id=db.Column(db.Integer,primary_key=True)
     username=db.Column(db.String(100),nullable=False,unique=True)
-    password=db.Column(db.String(255),nullable=False)
+    password_hash=db.Column(db.String(255),nullable=False)
     name=db.Column(db.String(100),nullable=False)
     qualification=db.Column(db.String(100))
     dob=db.Column(db.Date)
@@ -16,6 +17,12 @@ class User(db.Model):
         back_populates="user",
         cascade="all,delete-orphan"
     )
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Subject(db.Model):
@@ -32,7 +39,7 @@ class Subject(db.Model):
 class Chapter(db.Model):
     __tablename__ = "chapter"
     id=db.Column(db.Integer,primary_key=True)
-    name=db.Column(db.String(100,nullable=False))
+    name=db.Column(db.String(100),nullable=False)
     description=db.Column(db.String(500))
     quizzes=db.relationship(
         "Quiz",
@@ -88,3 +95,4 @@ class Scores(db.Model):
 
     user=db.relationship("User", back_populates="scores")
     quiz=db.relationship("Quiz",back_populates="scores")
+
