@@ -1,4 +1,4 @@
-from extensions import db
+from placementportalcode.extensions import db
 
 def save(instance,commit=False):
     try:
