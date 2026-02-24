@@ -1,5 +1,5 @@
-from quizmastercode import create_app
-from quizmastercode import db
+from placementportalcode import create_app
+from placementportalcode import db
 
 
 app=create_app()
