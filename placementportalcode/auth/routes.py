@@ -41,7 +41,9 @@ def login():
     
     
     session["user_id"]=user.id
-
+    print(user.role)
+    if user.role == RoleEnum.ADMIN.value:
+        return redirect(url_for("admin.dashboard"))
     return success_response("Login Successful")
 
 @auth_bp.route("/logout" , methods=[HTTPMethod.GET,HTTPMethod.POST])

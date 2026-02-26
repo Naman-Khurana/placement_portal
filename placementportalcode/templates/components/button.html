@@ -1,0 +1,5 @@
+{% macro action_button(url, text, color="primary") %}
+<a href="{{ url }}" class="btn btn-sm custom-btn btn-{{ color }}">
+    {{ text }}
+</a>
+{% endmacro %}

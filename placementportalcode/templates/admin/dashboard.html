@@ -1,0 +1,152 @@
+{% from "components/button.html" import action_button %}
+{% extends 'base.html'%}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{%endblock%}
+{% block title %}  
+<section>
+    <div>Admin Dashboard</div>
+    <input type="search" placeholder="students,organization" />
+    <button>search</button>
+</section>
+{%endblock%}
+
+{% block content%}
+
+<div class="header-bar d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Welcome Admin</h5>
+    <form class="d-flex" method="GET" action="">
+        <input class="form-control me-2" type="search" name="q" placeholder="student, organizations">
+        <button class="btn btn-primary btn-sm">Search</button>
+    </form>
+</div>
+
+
+
+<section class="section-box">
+    <div>Registerd Companies</div> 
+    {#{% for company in registered_companies %}
+    <section class="list-item-box">
+        <div>{{company.name}}</div>
+        
+        {{ action_button(
+            url_for('', id=company.id),
+            "Blacklist",
+            "danger"
+        ) }}
+    </section>
+    {%endfor%} #}
+</section>
+
+
+
+<section class="section-box">
+    <div>Registerd Students</div> 
+    {#{% for student in registered_students %}
+    <section class="list-item-box">
+        <div>{{student.name}}</div>
+        
+        {{ action_button(
+            url_for('', id=student.id),
+            "Blacklist",
+            "danger"
+        ) }}
+    </section>
+    {%endfor%}#}
+</section>
+
+
+<section class="section-box">
+    <div>Company Applications</div> 
+    {#{% for company in company_applications %}
+    <section class="list-item-box">
+        <div>{{company.name}}</div>
+        
+        {{ action_button(
+            url_for('', id=company.id),
+            "Approve",
+            "success"
+        ) }}
+    </section>
+    {%endfor%}#}
+</section>
+
+
+<section class="section-box">
+    <div>Ongoing Drives</div>
+    <table class="table table-bordered">
+         <thead class="table-light">
+            <tr>
+                <th>Sr No.</th>
+                <th>Drive Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drive in drives %}
+
+            <tr>
+                <td>1</td>
+                <td>{{drive.name}}</td>
+                <td>
+                    {{
+                        action_button(
+                            url_for('',id=drive.id,"view details","success")
+                        )
+                        action_button(
+                            url_for('',id=drive.id,"mark as complete","success")
+                        )
+
+                    }}
+                </td>
+            </tr>
+
+
+            {% endfor %}
+        </tbody>
+    </table>
+    <section></section>
+</section>
+
+<section class="section-box">
+    <div>Student Applications</div>
+    <table class="table table-bordered">
+         <thead class="table-light">
+            <tr>
+                <th>Sr No.</th>
+                <th>Name</th>
+                <th>Drive</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in student_applications %}
+
+            <tr>
+                <td>1</td>
+                <td>{{application.student}}</td>
+                <td>{{application.drive}}</td>
+                <td>{{application.company}}</td>
+                <td>{{application.Date}}</td>
+                <td>
+                    {{
+                        action_button(
+                            url_for('',id=drive.id,"view","success")
+                        )
+                    }}
+                </td>
+            </tr>
+
+
+            {% endfor %}
+        </tbody>
+    </table>
+    <section></section>
+</section>
+
+
+
+{%endblock%}
