@@ -21,10 +21,18 @@
             <button type="submit" class="btn-login">Signup</button>
         </form>
 
-        <p class="register-text">
-            already have an account?
-            <a href="{{url_for('auth.login')}}">Login</a>
-        </p>
+       <div class="register-text">
+            <p >
+                Already have an account?
+                <a href="{{url_for('auth.login')}}">Register</a>
+            </p>
+            <p >
+                Register your organization for drives?
+                <a href="{{url_for('auth.register_company')}}">Register</a>
+            </p>
+        </div>
+
+
     </section>
 </main>
 

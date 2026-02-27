@@ -24,7 +24,12 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+    company = db.relationship(
+        "Company",
+        back_populates="user",
+        uselist=False,   # one-to-one
+        cascade="all, delete-orphan"
+    )
     
 
 
@@ -38,11 +43,19 @@ class Company(db.Model):
                               default=CompanyEnumStatus.PENDING.value,
                               nullable=False
                               )
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False,
+        unique=True   # ensures one-to-one
+    )
     drives=db.relationship(
         "PlacementDrive",
         back_populates='company',
         cascade="all, delete-orphan"
     )
+    user = db.relationship("User", back_populates="company")
+
 
 
 class PlacementDrive(db.Model):

@@ -5,11 +5,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 {%endblock%}
 {% block title %}  
-<section>
-    <div>Admin Dashboard</div>
-    <input type="search" placeholder="students,organization" />
-    <button>search</button>
-</section>
+Admin Dashboard
 {%endblock%}
 
 {% block content%}
@@ -84,7 +80,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for drive in drives %}
+           {# {% for drive in drives %}
 
             <tr>
                 <td>1</td>
@@ -103,7 +99,7 @@
             </tr>
 
 
-            {% endfor %}
+            {% endfor %}#}
         </tbody>
     </table>
     <section></section>
@@ -123,7 +119,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for application in student_applications %}
+            {#{% for application in student_applications %}
 
             <tr>
                 <td>1</td>
@@ -141,7 +137,7 @@
             </tr>
 
 
-            {% endfor %}
+            {% endfor %}#}
         </tbody>
     </table>
     <section></section>

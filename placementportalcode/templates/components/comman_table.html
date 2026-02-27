@@ -1,0 +1,23 @@
+{% macro render_table(title, headers) %}
+
+<div class="section-box">
+    <div class="section-title">
+        {{ title }}
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                {% for header in headers %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {{ caller() }}
+        </tbody>
+    </table>
+</div>
+
+{% endmacro %}

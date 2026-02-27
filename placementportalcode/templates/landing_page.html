@@ -1,0 +1,27 @@
+{% from "components/button.html" import action_button %}
+{% extends "base.html"%}
+
+{% block title %} IITM Placement Portal Page {%endblock%}
+
+{% block content%}
+<main class="">
+    <section>Welcome to IITM Placement Portal </section>
+    <section>
+        {{ action_button(
+            url_for('auth.login'),
+            "Are you a Student?",
+            "success"
+        ) }}
+
+        {{ action_button(
+            url_for('auth.login'),
+            "Are you an Organization?",
+            "primary"
+        ) }}
+</section>
+</main>
+    
+
+
+
+{%endblock%}

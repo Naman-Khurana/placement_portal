@@ -1,9 +1,10 @@
 from flask import Blueprint,request,session, render_template, request, redirect, url_for, session, flash
-from placementportalcode.models import User
+from placementportalcode.models import User,Company
 from http import HTTPMethod
-from placementportalcode.enums.modelsenum import UserEnum 
+from placementportalcode.enums.approval_status import CompanyEnumStatus
+from placementportalcode.enums.modelsenum import UserEnum ,CompanyEnum
 from placementportalcode.enums.role import RoleEnum
-
+from placementportalcode.extensions import db
 from placementportalcode.utils.responses import success_response,error_response
 from placementportalcode.utils.db import save,commit_session
 
@@ -50,6 +51,58 @@ def login():
 def logout():
     session.pop("user_id",None)
     return success_response("Logged out")
+
+@auth_bp.route("/company-register" ,methods=['GET','POST'])
+def register_company():
+    if(request.method=='GET'):
+        return render_template("company/register.html")
+    data=request
+    hr_contact=data.form.get(CompanyEnum.HR_CONTACT.value)
+    company_name = data.form.get(CompanyEnum.COMPANY_NAME.value)
+    password = data.form.get(UserEnum.PASSWORD.value)
+    website = data.form.get(CompanyEnum.COMPANY_WEBSITE.value)
+
+
+    existing_user = User.query.filter_by(username=hr_contact).first()
+
+    if existing_user: 
+        flash("Email already registered.", "danger")
+        return redirect(url_for("auth.register_company"))
+    
+
+    try:
+
+        user=User(
+            username=hr_contact,
+            name=company_name,
+            role=RoleEnum.COMPANY.value        
+        )
+        user.set_password(password)
+        
+        db.session.add(user)
+        db.session.flush() 
+
+        
+        
+        company = Company(
+                    company_name=company_name,
+                    hr_contact=hr_contact,
+                    company_website=website,
+                    approval_status=CompanyEnumStatus.PENDING.value,
+                    user_id=user.id
+
+                )
+
+        db.session.add(company)
+        db.session.commit()
+
+        flash("Registration successful. Await admin approval.", "success")
+        return redirect(url_for("auth.login"))
+    except Exception as e:
+        db.session.rollback()
+        flash("Something went wrong. Try again.", "danger")
+        return redirect(url_for("auth.register_company"))
+        
 
 @auth_bp.route("/signup", methods=[HTTPMethod.GET,HTTPMethod.POST])
 def signup():

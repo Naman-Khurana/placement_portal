@@ -9,7 +9,7 @@
 
 
 .login-card {
-    width: 350px;
+    width: 600px;
     padding: 40px;
     border-radius: 20px;
     background: white;
@@ -53,4 +53,13 @@
 .register-text {
     margin-top: 15px;
     font-size: 14px;
+    flex:true;
+}
+
+.register-text p {
+    margin: 0;
+}
+
+.register-text p {
+    margin: 2px 0;
 }
