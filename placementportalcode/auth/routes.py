@@ -39,18 +39,20 @@ def login():
         flash("Invalid password")
         return redirect(url_for("auth.login"))
     
-    
-    
+
     session["user_id"]=user.id
     print(user.role)
     if user.role == RoleEnum.ADMIN.value:
         return redirect(url_for("admin.dashboard"))
-    return success_response("Login Successful")
+    if user.role==RoleEnum.COMPANY.value:
+        return redirect(url_for("company.dashboard"))
+    flash(user.role)
+    return redirect(url_for("student.dashboard"))
 
 @auth_bp.route("/logout" , methods=[HTTPMethod.GET,HTTPMethod.POST])
 def logout():
     session.pop("user_id",None)
-    return success_response("Logged out")
+    return redirect(url_for("auth.login"))
 
 @auth_bp.route("/company-register" ,methods=['GET','POST'])
 def register_company():
@@ -116,16 +118,13 @@ def signup():
     name=data.form.get(UserEnum.NAME.value)
 
     
-
-    
-    
     #missing fields check
     if not username or not password or not name:
         flash("missing credentials")
         return redirect(url_for("auth.signup")) 
     
     #duplicate username check
-    if User.query.filter_by(username).first():
+    if User.query.filter_by(username=username).first():
         flash("Username already exists")
         return redirect(url_for("auth.signup")) 
        
@@ -140,5 +139,5 @@ def signup():
     save(user)
     commit_session()
 
-    return success_response("User created successfully",201)
+    return redirect(url_for("auth.login"))
     

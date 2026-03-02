@@ -61,6 +61,7 @@ class Company(db.Model):
 class PlacementDrive(db.Model):
     __tablename__ = "placement_drive"
     drive_id=db.Column(db.Integer,primary_key=True)
+    drive_name = db.Column(db.String(100), nullable=False)
 # to be corrected
     company_id=db.Column(
         db.Integer,

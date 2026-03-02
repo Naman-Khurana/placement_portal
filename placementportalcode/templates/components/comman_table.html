@@ -1,9 +1,10 @@
-{% macro render_table(title, headers) %}
+{% macro render_table( headers,title=None) %}
 
-<div class="section-box">
-    <div class="section-title">
-        {{ title }}
-    </div>
+
+<div>
+    {% if title %}
+        <h3>{{title}}</h2>
+    {% endif %}
 
     <table class="table table-bordered">
         <thead class="table-light">

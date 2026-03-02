@@ -1,5 +1,8 @@
-{% macro action_button(url, text, color="primary") %}
-<a href="{{ url }}" class="btn btn-sm custom-btn btn-{{ color }}">
+{% macro action_button(url, text, color="primary",toggle=None,target=None) %}
+<a href="{{ url }}"
+   class="btn btn-sm custom-btn btn-{{ color }}"
+   {% if toggle %} data-bs-toggle="{{ toggle }}" {% endif %}
+   {% if target %} data-bs-target="{{ target }}" {% endif %}>
     {{ text }}
 </a>
 {% endmacro %}

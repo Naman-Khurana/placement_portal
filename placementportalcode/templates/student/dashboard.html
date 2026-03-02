@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% from "components/comman_table.html" import render_table %}
+
+{% from "components/modal.html" import render_modal %}
+
+{% from "components/button.html" import action_button %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{%endblock%}
+{% block title %}
+Student Dashboard
+{%endblock%}
+
+{% block content%}
+
+<div class="header-bar d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Welcome Organization</h5>
+    <div>
+        {{action_button("#","Edit Profile","light")}}
+        {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory")}}
+        {{action_button(url_for("auth.logout"),"Logout","light")}}
+    </div>
+</div>
+
+
+{% call render_modal("studentApplicationHistory", "modal-lg") %}
+
+<main>
+    <h1>Student Application History</h1>
+    <br>
+
+    <div>Student Name : </div>
+    <br>
+    <div>Department Name : </div>
+    <br>
+
+    {% call render_table(["Drive No.", "Interview","Job Title","Results", "Actions"]) %}
+
+    {# {% for drive in drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>
+            {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
+        </td>
+    </tr>
+    {% endfor %}#}
+
+    {% endcall %}
+
+
+
+</main>
+
+{% endcall %}
+
+
+
+<section class="section-box">
+    <div>Organizations</div>
+    {#{% for company in registered_companies %}
+    <section class="list-item-box">
+        <div>{{company.name}}</div>
+
+        {{ action_button(
+        url_for('', id=company.id),
+        "Blacklist",
+        "danger"
+        ) }}
+    </section>
+    {%endfor%} #}
+</section>
+
+{% call render_table( ["Sr No.", "Drive Name","Company","Date", "Actions"]) %}
+
+{# {% for drive in drives %}
+<tr>
+    <td>{{ loop.index }}</td>
+    <td>{{ drive.job_title }}</td>
+    <td>
+        {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
+    </td>
+</tr>
+{% endfor %}#}
+
+{% endcall %}
+
+
+
+
+{%endblock%}
