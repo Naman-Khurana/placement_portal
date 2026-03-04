@@ -13,6 +13,11 @@ class User(db.Model):
     name=db.Column(db.String(100),nullable=False)
     dob=db.Column(db.Date)
     role=db.Column(db.String(20),default=RoleEnum.STUDENT.value,nullable=False)
+    eligible = db.Column(
+        db.Boolean,
+        nullable=True,
+        default=True
+    )
     applications=db.relationship(
         "Application",
         back_populates='student',

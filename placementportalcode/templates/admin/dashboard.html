@@ -1,10 +1,11 @@
 {% from "components/button.html" import action_button %}
+{% from "components/post_button.html" import action_post_button %}
 {% extends 'base.html'%}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 {%endblock%}
-{% block title %}  
+{% block title %}
 Admin Dashboard
 {%endblock%}
 
@@ -16,63 +17,88 @@ Admin Dashboard
         <input class="form-control me-2" type="search" name="q" placeholder="student, organizations">
         <button class="btn btn-primary btn-sm">Search</button>
     </form>
+    {{action_button(url_for("auth.logout"),"Logout","light")}}
 </div>
 
 
 
 <section class="section-box">
-    <div>Registerd Companies</div> 
-    {#{% for company in registered_companies %}
+    <div>Registerd Companies</div>
+    {% for company in registered_companies %}
     <section class="list-item-box">
-        <div>{{company.name}}</div>
-        
-        {{ action_button(
-            url_for('', id=company.id),
-            "Blacklist",
-            "danger"
+        <div>{{company.company_name}}</div>
+
+        {{ action_post_button(
+        url_for('admin.update_company_status', company_id=company.company_id),
+        "Blacklist",
+        "danger",
+        name="action",
+        value="blacklist"
         ) }}
     </section>
-    {%endfor%} #}
+    {%endfor%}
 </section>
 
 
 
 <section class="section-box">
-    <div>Registerd Students</div> 
-    {#{% for student in registered_students %}
+    <div>Registerd Students</div>
+    {% for student in registered_students %}
     <section class="list-item-box">
         <div>{{student.name}}</div>
-        
-        {{ action_button(
-            url_for('', id=student.id),
-            "Blacklist",
-            "danger"
+        {% if student.eligible%}
+        {{ action_post_button(
+        url_for('admin.update_student_status', student_id=student.id),
+        "Blacklist",
+        "danger",
+        name="action",
+        value="blacklist"
         ) }}
+        {% else %}
+        {{ action_post_button(
+        url_for('admin.update_student_status', student_id=student.id),
+        "Whitelist",
+        "success",
+        name="action",
+        value="whitelist"
+        ) }}
+        {%endif%}
     </section>
-    {%endfor%}#}
+    {%endfor%}
 </section>
 
 
 <section class="section-box">
-    <div>Company Applications</div> 
-    {#{% for company in company_applications %}
+    <div>Company Applications</div>
+    {% for company in company_applications %}
     <section class="list-item-box">
-        <div>{{company.name}}</div>
-        
-        {{ action_button(
-            url_for('', id=company.id),
+        <div>{{company.company_name}}</div>
+        <div>
+            {{ action_post_button(
+            url_for('admin.update_company_status', company_id=company.company_id),
             "Approve",
-            "success"
-        ) }}
+            "success",
+            name="action",
+            value="approve"
+            ) }}
+
+            {{ action_post_button(
+            url_for('admin.update_company_status', company_id=company.company_id),
+            "Blacklist",
+            "danger",
+            name="action",
+            value="blacklist"
+            ) }}
+        </div>
     </section>
-    {%endfor%}#}
+    {%endfor%}
 </section>
 
 
 <section class="section-box">
     <div>Ongoing Drives</div>
     <table class="table table-bordered">
-         <thead class="table-light">
+        <thead class="table-light">
             <tr>
                 <th>Sr No.</th>
                 <th>Drive Name</th>
@@ -80,26 +106,28 @@ Admin Dashboard
             </tr>
         </thead>
         <tbody>
-           {# {% for drive in drives %}
+            {% for drive in ongoing_drives %}
 
             <tr>
-                <td>1</td>
-                <td>{{drive.name}}</td>
+                <td>{{ loop.index }}</td>
+                <td>{{drive.drive_name}}</td>
                 <td>
-                    {{
-                        action_button(
-                            url_for('',id=drive.id,"view details","success")
-                        )
-                        action_button(
-                            url_for('',id=drive.id,"mark as complete","success")
-                        )
+                    
+                            {{ action_post_button(
+            url_for('admin.update_drive_status', drive_id=drive.drive_id),
+            "Mark as Complete",
+            "success",
+            name="action",
+            value="close"
+            ) }}
 
-                    }}
+
+                    
                 </td>
             </tr>
 
 
-            {% endfor %}#}
+            {% endfor %}
         </tbody>
     </table>
     <section></section>
@@ -108,7 +136,7 @@ Admin Dashboard
 <section class="section-box">
     <div>Student Applications</div>
     <table class="table table-bordered">
-         <thead class="table-light">
+        <thead class="table-light">
             <tr>
                 <th>Sr No.</th>
                 <th>Name</th>
@@ -129,9 +157,9 @@ Admin Dashboard
                 <td>{{application.Date}}</td>
                 <td>
                     {{
-                        action_button(
-                            url_for('',id=drive.id,"view","success")
-                        )
+                    action_button(
+                    url_for('',id=drive.id,"view","success")
+                    )
                     }}
                 </td>
             </tr>

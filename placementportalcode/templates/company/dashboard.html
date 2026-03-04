@@ -69,35 +69,47 @@ Company Dashboard
 
 
 
-{% call render_table( ["Sr No.", "Drive Name", "Actions"],"Upcoming Drives") %}
+{% call render_table( ["Sr No.", "Drive Name","Status", "Actions"],"Upcoming Drives") %}
 
-{# {% for drive in drives %}
+{% for drive in upcoming_drives %}
 <tr>
     <td>{{ loop.index }}</td>
     <td>{{ drive.job_title }}</td>
+    <td>{{drive.status}}</td>
     <td>
-        {{ action_button(url_for('drive.details', id=drive.drive_id), "View details", "primary") }}
-        {{ action_button(url_for('drive.details', id=drive.drive_id), "Mark as complete", "success") }}
-
+        {#{ action_button(url_for('drive.details', id=drive.drive_id), "View details", "primary") }#}
+        {#{ action_button(url_for('drive.details', id=drive.drive_id), "Mark as complete", "success") }#}
+        {#{% if drive.status == "APPROVED" %}#}
+            {{ action_button(
+                url_for("auth.login", id=drive.drive_id),
+                "View Details",
+                "primary"
+            ) }}
+            {{ action_button(
+                url_for("auth.login", id=drive.drive_id),
+                "Mark as complete",
+                "success"
+            ) }}
+       {# {% endif %}#}
     </td>
 
 </tr>
-{% endfor %}#}
+{% endfor %}
 
 {% endcall %}
 
 
 {% call render_table(["Sr No.", "Drive Name", "Actions"],"Closed Drives") %}
 
-{# {% for drive in drives %}
+{% for drive in closed_drives %}
 <tr>
     <td>{{ loop.index }}</td>
     <td>{{ drive.job_title }}</td>
     <td>
-        {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
+        {{ action_button(url_for('auth.login', id=drive.drive_id), "Update", "primary") }}
     </td>
 </tr>
-{% endfor %}#}
+{% endfor %}
 
 {% endcall %}
 

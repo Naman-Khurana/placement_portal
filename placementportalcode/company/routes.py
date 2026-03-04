@@ -1,10 +1,10 @@
 from flask import Flask ,Blueprint,session,render_template,redirect,url_for,request
 from placementportalcode.models import Company,User,PlacementDrive
 from placementportalcode.enums.role import RoleEnum
-from placementportalcode.enums.modelsenum import PlacementDriveEnum,UserEnum
+from placementportalcode.enums.modelsenum import PlacementDriveEnum,UserEnum,CompanyEnum
 from http import HTTPMethod
 from placementportalcode.extensions import db
-from datetime import datetime
+from datetime import datetime,date
 
 company_bp=Blueprint("company",__name__,url_prefix="/company")
 
@@ -17,11 +17,24 @@ def dashboard():
     if not user or user.role!=RoleEnum.COMPANY  .value:
         return redirect(url_for("auth.login"))
     
-    if(request.method==HTTPMethod.GET):
-        return render_template("company/dashboard.html")
+    
     
 
-    return "Company Dashboard"
+    current_company=user.company
+    now=datetime.now()
+
+
+    upcoming_drives=PlacementDrive.query.filter(
+        PlacementDrive.company_id==current_company.company_id,
+        PlacementDrive.application_deadline >=now
+    ).order_by(PlacementDrive.application_deadline.asc()).all()\
+    
+    closed_drives=PlacementDrive.query.filter(
+        PlacementDrive.company_id==current_company.company_id,
+        PlacementDrive.application_deadline < now
+    ).order_by(PlacementDrive.application_deadline.asc()).all()
+
+    return render_template("company/dashboard.html",upcoming_drives=upcoming_drives, closed_drives=closed_drives)
 
 @company_bp.route("/create-drive",methods=[HTTPMethod.POST])
 def create_drive():

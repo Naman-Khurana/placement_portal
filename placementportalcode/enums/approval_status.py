@@ -9,5 +9,5 @@ class DriveApprovalStatusEnum(enum.Enum):
 class CompanyEnumStatus(enum.Enum):
     PENDING='pending'
     APPROVED='approved'
-    REJECTED='rejected'
+    BLACKLISTED='blacklisted'
     

@@ -1,0 +1,10 @@
+{% macro list_row(title) %}
+<div class="d-flex justify-content-between align-items-center w-100">
+<div>
+    {{title}}
+</div>
+<section>
+    {{caller()}}
+</section>
+</div>
+{% endmacro %}

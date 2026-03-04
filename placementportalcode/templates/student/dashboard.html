@@ -16,7 +16,7 @@ Student Dashboard
 {% block content%}
 
 <div class="header-bar d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Welcome Organization</h5>
+    <h5 class="mb-0">Welcome Student</h5>
     <div>
         {{action_button("#","Edit Profile","light")}}
         {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory")}}
@@ -60,17 +60,17 @@ Student Dashboard
 
 <section class="section-box">
     <div>Organizations</div>
-    {#{% for company in registered_companies %}
+    {% for company in registered_companies %}
     <section class="list-item-box">
-        <div>{{company.name}}</div>
+        <div>{{company.company_name}}</div>
 
         {{ action_button(
-        url_for('', id=company.id),
+        url_for('auth.login', id=company.company_id),
         "Blacklist",
         "danger"
         ) }}
     </section>
-    {%endfor%} #}
+    {%endfor%} 
 </section>
 
 {% call render_table( ["Sr No.", "Drive Name","Company","Date", "Actions"]) %}

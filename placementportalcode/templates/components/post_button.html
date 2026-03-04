@@ -1,0 +1,10 @@
+{% macro action_post_button(url, text, color="primary", name=None, value=None) %}
+<form method="POST" action="{{ url }}" class="d-inline">
+    <button type="submit"
+            class="btn btn-sm btn-{{ color }}"
+            {% if name %} name="{{ name }}" {% endif %}
+            {% if value %} value="{{ value }}" {% endif %}>
+        {{ text }}
+    </button>
+</form>
+{% endmacro %}
