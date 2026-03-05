@@ -80,6 +80,11 @@ class PlacementDrive(db.Model):
                      ,default=DriveApprovalStatusEnum.PENDING.value
                      ,nullable=False)
     application_deadline=db.Column(db.DateTime,nullable=False)
+    ctc = db.Column(
+        db.String(50),
+        nullable=False,
+        default="Not Disclosed"
+    )
     company=db.relationship(
         "Company",
         back_populates="drives"

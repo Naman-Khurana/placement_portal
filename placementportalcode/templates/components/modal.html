@@ -1,4 +1,4 @@
-{% macro render_modal(modal_id, size="") %}
+{% macro render_modal(modal_id, size="",title=None) %}
 
 <div class="modal fade" id="{{ modal_id }}" tabindex="-1">
   <div class="modal-dialog {{ size }}">
@@ -6,7 +6,9 @@
 
 
       <div class="modal-header">
-        <!-- <h5 class="modal-title">{{ title }}</h5> -->
+       {% if title %}
+        <h5 class="modal-title">{{ title }}</h5>
+        {% endif %}
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 

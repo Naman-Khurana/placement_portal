@@ -65,13 +65,17 @@ Student Dashboard
         <div>{{company.company_name}}</div>
 
         {{ action_button(
-        url_for('auth.login', id=company.company_id),
-        "Blacklist",
-        "danger"
+        url_for('student.company_drives', company_id=company.company_id),
+        "View Details",
+        "primary"
         ) }}
     </section>
     {%endfor%} 
+
+
 </section>
+
+
 
 {% call render_table( ["Sr No.", "Drive Name","Company","Date", "Actions"]) %}
 

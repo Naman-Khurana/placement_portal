@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% from "components/comman_table.html" import render_table %}
+
+{% from "components/modal.html" import render_modal %}
+
+{% from "components/button.html" import action_button %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{%endblock%}
+{%block title %} company detais {%endblock%}
+
+
+{% block content%}
+
+<div class="header-bar d-flex justify-content-between align-items-center">
+    <h1 class="mb-0">{{company.company_name}}</h1>
+    <div>
+
+        {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory")}}
+        {{action_button(url_for("auth.logout"),"Logout","light")}}
+    </div>
+</div>
+
+<div class="section-box">
+    <h4 class="">Overview</h4>
+    <br>
+    <div>{{company.company_website}}</div>
+
+</div>
+
+
+<section class="section-box">
+    <h5>Current Drives</h5>
+    {% for drive in current_drives %}
+    <section class="list-item-box">
+        <div>{{drive.drive_name}}</div>
+
+        {{ action_button(
+        "#",
+        "View Details",
+        "primary",
+        toggle="modal",
+        target="#driveDetails" ~ drive.drive_id
+        ) }}
+    </section>
+  
+    {% else %}
+
+    {#<div class="text-muted mt-2">
+        No current drives
+    </div>#}
+    <div class="alert alert-secondary mt-2">
+        No current drives available
+    </div>
+
+    {% endfor %}
+</section>
+
+
+{% for drive in current_drives %}
+
+{% call render_modal("driveDetails" ~ drive.drive_id, "modal-lg",title=company.company_name) %}
+
+<h3>{{ drive.drive_name }}</h3>
+
+<br>
+
+<div><b>Job Title:</b> {{ drive.job_title }}</div>
+<div><b>Job Description:</b> {{ drive.job_desc }}</div>
+<div><b>Eligibility:</b> {{ drive.eligibility_criteria }}</div>
+<div><b>Deadline:</b> {{ drive.application_deadline }}</div>
+<div><b>CTC:</b> {{ drive.ctc }}</div>
+
+<br>
+
+<form method="POST" action="{{ url_for('student.dashboard') }}">
+
+    <button type="submit" class="btn btn-success w-100">
+        Apply
+    </button>
+
+</form>
+
+{% endcall %}
+
+{% endfor %}
+
+
+
+
+
+{%endblock%}
