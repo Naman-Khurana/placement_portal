@@ -1,9 +1,14 @@
-{% macro render_table( headers,title=None) %}
+{% macro render_table( headers,title=None,sub_title=None    ) %}
 
 
 <div>
     {% if title %}
+        <div class="d-flex justify-content-between">
         <h3>{{title}}</h2>
+        {% if sub_title %}
+        <div>{{sub_title}}</div>
+        {%endif%}
+        </div>
     {% endif %}
 
     <table class="table table-bordered">

@@ -13,6 +13,8 @@ class User(db.Model):
     name=db.Column(db.String(100),nullable=False)
     dob=db.Column(db.Date)
     role=db.Column(db.String(20),default=RoleEnum.STUDENT.value,nullable=False)
+    department=db.Column(db.String(100),nullable=True)
+    resume_path = db.Column(db.String(255), nullable=True)  # new column
     eligible = db.Column(
         db.Boolean,
         nullable=True,
@@ -35,6 +37,7 @@ class User(db.Model):
         uselist=False,   # one-to-one
         cascade="all, delete-orphan"
     )
+    
     
 
 

@@ -5,6 +5,8 @@
 
 {% from "components/button.html" import action_button %}
 
+{% from "components/post_button.html" import action_post_button %}
+
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
@@ -16,10 +18,10 @@ Student Dashboard
 {% block content%}
 
 <div class="header-bar d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Welcome Student</h5>
+    <h5 class="mb-0">Welcome {{student.name}}</h5>
     <div>
-        {{action_button("#","Edit Profile","light")}}
-        {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory")}}
+        {{action_button("#","Edit Profile","light",toggle="modal",target="#editProfile" )}}
+        {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory" )}}
         {{action_button(url_for("auth.logout"),"Logout","light")}}
     </div>
 </div>
@@ -31,22 +33,29 @@ Student Dashboard
     <h1>Student Application History</h1>
     <br>
 
-    <div>Student Name : </div>
+    <h3>Student Name : {{student.name}}</h3>
     <br>
-    <div>Department Name : </div>
+    {%if student.department %}
+    <h5>Department: {{ student.department }}</h5>
     <br>
+    {%endif%}
+    {% call render_table(["Drive No.", "Company","Interview","Job Title","Status", "Application Date"]) %}
 
-    {% call render_table(["Drive No.", "Interview","Job Title","Results", "Actions"]) %}
+    {% for application in student_applications %}
 
-    {# {% for drive in drives %}
+
     <tr>
         <td>{{ loop.index }}</td>
-        <td>{{ drive.job_title }}</td>
-        <td>
-            {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
-        </td>
+        <td>{{ application.drive.company.company_name }}</td>
+        <td>{{ 'In-Person' }}</td>
+        <td>{{ application.drive.job_title }}</td>
+        <td>{{ application.status }}</td>
+        <td>{{ application.application_date }}</td>
+
+
+
     </tr>
-    {% endfor %}#}
+    {% endfor %}
 
     {% endcall %}
 
@@ -59,37 +68,127 @@ Student Dashboard
 
 
 <section class="section-box">
-    <div>Organizations</div>
+    <h3>Organizations</h3>
     {% for company in registered_companies %}
     <section class="list-item-box">
         <div>{{company.company_name}}</div>
 
         {{ action_button(
-        url_for('student.company_drives', company_id=company.company_id),
+        url_for('student.company_drives', company_id=company.company_id,student_id=student.id),
         "View Details",
         "primary"
         ) }}
     </section>
-    {%endfor%} 
+    {%endfor%}
 
 
 </section>
 
 
+<section class="section-box">
+    {% call render_table( ["Sr No.", "Company Name","Job Title","Application Date","Status" ,"Actions"],title="Applied
+    Drives") %}
 
-{% call render_table( ["Sr No.", "Drive Name","Company","Date", "Actions"]) %}
+    {# {% for drive in drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>
+            {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
+        </td>
+    </tr>
+    {% endfor %}#}
 
-{# {% for drive in drives %}
-<tr>
-    <td>{{ loop.index }}</td>
-    <td>{{ drive.job_title }}</td>
-    <td>
-        {{ action_button(url_for('drive.details', id=drive.drive_id), "Update", "primary") }}
-    </td>
-</tr>
-{% endfor %}#}
 
-{% endcall %}
+    {% for application in student_applications %}
+
+
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ application.drive.company.company_name }}</td>
+
+        <td>{{ application.drive.job_title }}</td>
+        <td>{{ application.application_date }}</td>
+        <td>{{ application.status }}</td>
+
+
+        <td>
+            {% if application.status!="rejected" %}
+            {{ action_post_button(
+            url_for('student.withdraw_application'),
+            "Withdraw Application",
+            "danger",
+            name="drive_id",
+            value=application.drive.drive_id
+            ) }}
+            {%endif%}
+        </td>
+
+    </tr>
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+    {% endcall %}
+</section>
+
+
+
+
+{% call render_modal("editProfile", "modal-lg",title="Edit Profile") %}
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="{{ url_for('student.edit_profile' ) }}" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label class="form-label">Student Name</label>
+        <input type="text" name="name" class="form-control" value="{{ student.name }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Date of Birth</label>
+        <input type="date" name="dob" class="form-control"
+            value="{{ student.dob.strftime('%Y-%m-%d') if student.dob else '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Department</label>
+        <input type="text" name="department" class="form-control" value="{{ student.department }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Upload Resume</label>
+
+        <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
+    </div>
+
+    {% if student.resume_path %}
+    <div class="mb-2">
+        <b>Current Resume:</b>
+        {{ student.resume_path.split('/')[-1] }}
+    </div>
+    {% else %}
+    <div class="text-muted mb-2">No resume uploaded</div>
+    {% endif %}
+    <button class="btn btn-primary">
+        Update Profile
+    </button>
+
+</form>
+{%endcall%}
 
 
 

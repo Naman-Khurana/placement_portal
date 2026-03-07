@@ -6,7 +6,7 @@ from placementportalcode.company.routes import company_bp
 from placementportalcode.student.routes import student_bp
 from .config import Config
 from flask_migrate import Migrate
-
+import os
 
 def create_app():
     app=Flask(__name__)
@@ -18,6 +18,11 @@ def create_app():
     app.register_blueprint(company_bp)
     app.register_blueprint(student_bp)
 
+    UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads", "resumes")
+    ALLOWED_EXTENSIONS = {"pdf", "doc", "docx"}
+
+    app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
     db.init_app(app)
 
     migrate = Migrate(app, db)

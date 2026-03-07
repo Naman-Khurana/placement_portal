@@ -1,5 +1,7 @@
 {% from "components/button.html" import action_button %}
 {% from "components/post_button.html" import action_post_button %}
+{% from "components/comman_table.html" import render_table %}
+{% from "components/modal.html" import render_modal %}
 {% extends 'base.html'%}
 
 {% block extra_css %}
@@ -13,9 +15,14 @@ Admin Dashboard
 
 <div class="header-bar d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Welcome Admin</h5>
-    <form class="d-flex" method="GET" action="">
-        <input class="form-control me-2" type="search" name="q" placeholder="student, organizations">
-        <button class="btn btn-primary btn-sm">Search</button>
+    <form method="GET" action="{{ url_for('admin.search') }}" class="d-flex gap-2">
+
+        <input type="text" name="query" class="form-control" placeholder="Search students or companies">
+
+        <button class="btn btn-primary">
+            Search
+        </button>
+
     </form>
     {{action_button(url_for("auth.logout"),"Logout","light")}}
 </div>
@@ -23,7 +30,10 @@ Admin Dashboard
 
 
 <section class="section-box">
-    <div>Registerd Companies</div>
+    <div class="d-flex justify-content-between">
+        <h3>Registered Companies</h3>
+        <div>Total Registed : {{registered_companies.count() }} </div>
+    </div>
     {% for company in registered_companies %}
     <section class="list-item-box">
         <div>{{company.company_name}}</div>
@@ -42,7 +52,11 @@ Admin Dashboard
 
 
 <section class="section-box">
-    <div>Registerd Students</div>
+
+    <div class="d-flex justify-content-between">
+        <h3>Registerd Students</h3>
+        <div>Total Registed : {{registered_students.count() }} </div>
+    </div>
     {% for student in registered_students %}
     <section class="list-item-box">
         <div>{{student.name}}</div>
@@ -69,7 +83,11 @@ Admin Dashboard
 
 
 <section class="section-box">
-    <div>Company Applications</div>
+
+    <div class="d-flex justify-content-between">
+        <h3>Company Applications</h3>
+        <div>Total Applications : {{company_applications.count() }} </div>
+    </div>
     {% for company in company_applications %}
     <section class="list-item-box">
         <div>{{company.company_name}}</div>
@@ -95,8 +113,51 @@ Admin Dashboard
 </section>
 
 
+
 <section class="section-box">
-    <div>Ongoing Drives</div>
+
+
+
+    {% call render_table(["Sr No.","Company Name" ,"Drive Name","Job Title", "Actions"],"Requested Drives ","Total
+    Requests : " ~requested_drives.count()) %}
+
+    {% for drive in requested_drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{drive.company.company_name}}</td>
+        <td>{{drive.drive_name}}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>
+            {{ action_post_button(
+            url_for('admin.update_drive_status', drive_id=drive.drive_id),
+            "Approve",
+            "success",
+            name="action",
+            value="approve")}}
+            {{ action_post_button(
+            url_for('admin.update_drive_status', drive_id=drive.drive_id),
+            "Reject",
+            "danger",
+            name="action",
+            value="reject")}}
+
+        </td>
+    </tr>
+    {% endfor %}
+
+
+
+    {% endcall %}
+
+
+</section>
+
+
+<section class="section-box">
+    <div class="d-flex justify-content-between">
+        <h3>Ongoing Drives</h3>
+        <div>Total Drives : {{ongoing_drives.count()}}</div>
+    </div>
     <table class="table table-bordered">
         <thead class="table-light">
             <tr>
@@ -112,17 +173,24 @@ Admin Dashboard
                 <td>{{ loop.index }}</td>
                 <td>{{drive.drive_name}}</td>
                 <td>
-                    
-                            {{ action_post_button(
-            url_for('admin.update_drive_status', drive_id=drive.drive_id),
-            "Mark as Complete",
-            "success",
-            name="action",
-            value="close"
-            ) }}
+
+                    {{ action_post_button(
+                    url_for('admin.update_drive_status', drive_id=drive.drive_id),
+                    "Mark as Complete",
+                    "success",
+                    name="action",
+                    value="close"
+                    ) }}
+                    {{ action_button(
+                    "#",
+                    "View Details",
+                    "primary",
+                    toggle="modal",
+                    target="#driveDetails" ~ drive.drive_id
+                    ) }}
 
 
-                    
+
                 </td>
             </tr>
 
@@ -134,42 +202,148 @@ Admin Dashboard
 </section>
 
 <section class="section-box">
-    <div>Student Applications</div>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Sr No.</th>
-                <th>Name</th>
-                <th>Drive</th>
-                <th>Company</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#{% for application in student_applications %}
 
-            <tr>
-                <td>1</td>
-                <td>{{application.student}}</td>
-                <td>{{application.drive}}</td>
-                <td>{{application.company}}</td>
-                <td>{{application.Date}}</td>
-                <td>
-                    {{
-                    action_button(
-                    url_for('',id=drive.id,"view","success")
-                    )
-                    }}
-                </td>
-            </tr>
+    {% call render_table(["Sr No.","Student Name" ,"Drive","Job Title","Application Date", "Actions"],"Student
+    Applications","Total Applications : " ~student_applications|length) %}
 
+    {% for application in student_applications %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{application.student.name}}</td>
+        <td>{{application.drive.drive_name}}</td>
+        <td>{{ application.drive.job_title }}</td>
+        <td>{{application.application_date}}</td>
+        <td>
+            {{ action_button(
+            "#",
+            "View Details",
+            "primary",
+            toggle="modal",
+            target="#studentApplication" ~ application.student.id
+            ) }}
 
-            {% endfor %}#}
-        </tbody>
-    </table>
-    <section></section>
+        </td>
+    </tr>
+    {% endfor %}
+
+    {% endcall %}
+
 </section>
+
+
+<section class="section-box">
+    <div class="d-flex justify-content-between">
+        <h3>Blacklisted Companies</h3>
+        <div>Total Companies : {{blacklisted_companies.count() }} </div>
+    </div>
+    {% for company in blacklisted_companies %}
+    <section class="list-item-box">
+        <div>{{company.company_name}}</div>
+
+        {{ action_post_button(
+        url_for('admin.update_company_status', company_id=company.company_id),
+        "Approve",
+        "success",
+        name="action",
+        value="approve"
+        ) }}
+    </section>
+    {%endfor%}
+</section>
+
+
+<section class="section-box">
+
+
+
+    {% call render_table(["Sr No.","Company Name" ,"Drive Name","Job Title", "Actions"],"Rejected Drives ","Total Drives
+    : " ~rejected_drives.count()) %}
+
+    {% for drive in rejected_drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{drive.company.company_name}}</td>
+        <td>{{drive.drive_name}}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>
+            {{ action_post_button(
+            url_for('admin.update_drive_status', drive_id=drive.drive_id),
+            "Approve",
+            "success",
+            name="action",
+            value="approve")}}
+            {{ action_post_button(
+            url_for('admin.update_drive_status', drive_id=drive.drive_id),
+            "Reject",
+            "danger",
+            name="action",
+            value="reject")}}
+
+        </td>
+    </tr>
+    {% endfor %}
+
+
+
+    {% endcall %}
+
+
+</section>
+
+
+
+{% for drive in ongoing_drives %}
+
+{% call render_modal("driveDetails" ~ drive.drive_id, "modal-lg",title= drive.company.company_name) %}
+
+<h3>{{ drive.drive_name }}</h3>
+
+<br>
+
+<div><b>Job Title:</b> {{ drive.job_title }}</div>
+<div><b>Job Description:</b> {{ drive.job_desc }}</div>
+<div><b>Eligibility:</b> {{ drive.eligibility_criteria }}</div>
+<div><b>Deadline:</b> {{ drive.application_deadline }}</div>
+<div><b>CTC:</b> {{ drive.ctc }}</div>
+
+<br>
+
+{% endcall %}
+
+{% endfor%}
+
+
+{% for application in student_applications %}
+
+{% call render_modal("studentApplication" ~ application.student.id , "modal-lg",title="Student Application") %}
+
+<h3>Student Name: {{ application.student.name }}</h3>
+
+<br>
+{%if application.student.department %}
+<div><b>Department: </b> {{ application.student.department }}</div>
+{%endif%}
+<div><b>Drive: </b> {{ application.drive.drive_name }}</div>
+<div><b>Company: </b> {{ application.drive.company.company_name }}</div>
+<div><b>Job Title:</b> {{ application.drive.job_title }}</div>
+
+
+<br>
+
+{% if application.student.resume_path %}
+<a href="{{ url_for('static', filename=application.student.resume_path) }}" target="_blank" class="btn btn-primary">
+    View Resume
+</a>
+{% else %}
+<span class="text-muted">No Resume Uploaded</span>
+{% endif %}
+
+{% endcall%}
+
+{% endfor%}
+
+
+
 
 
 

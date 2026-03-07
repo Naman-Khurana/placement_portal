@@ -26,6 +26,7 @@ class PlacementDriveEnum(str, enum.Enum):
     STATUS = "status"
     APPLICATION_DEADLINE = "application_deadline"
     DRIVE_NAME="drive_name"
+    CTC="ctc"
 
 class ApplicationEnum(str, enum.Enum):
     APPLICATION_ID = "application_id"

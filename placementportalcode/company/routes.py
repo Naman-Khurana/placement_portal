@@ -1,10 +1,12 @@
 from flask import Flask ,Blueprint,session,render_template,redirect,url_for,request
-from placementportalcode.models import Company,User,PlacementDrive
+from placementportalcode.models import Company,User,PlacementDrive,Application
 from placementportalcode.enums.role import RoleEnum
 from placementportalcode.enums.modelsenum import PlacementDriveEnum,UserEnum,CompanyEnum
 from http import HTTPMethod
 from placementportalcode.extensions import db
 from datetime import datetime,date
+from placementportalcode.enums.approval_status import DriveApprovalStatusEnum
+from sqlalchemy import or_
 
 company_bp=Blueprint("company",__name__,url_prefix="/company")
 
@@ -26,15 +28,20 @@ def dashboard():
 
     upcoming_drives=PlacementDrive.query.filter(
         PlacementDrive.company_id==current_company.company_id,
-        PlacementDrive.application_deadline >=now
+        PlacementDrive.application_deadline >=now,
+        PlacementDrive.status!=DriveApprovalStatusEnum.CLOSED.value
     ).order_by(PlacementDrive.application_deadline.asc()).all()\
     
     closed_drives=PlacementDrive.query.filter(
         PlacementDrive.company_id==current_company.company_id,
-        PlacementDrive.application_deadline < now
+        or_(
+            PlacementDrive.application_deadline < now,
+            PlacementDrive.status==DriveApprovalStatusEnum.CLOSED.value
+        )
+       
     ).order_by(PlacementDrive.application_deadline.asc()).all()
 
-    return render_template("company/dashboard.html",upcoming_drives=upcoming_drives, closed_drives=closed_drives)
+    return render_template("company/dashboard.html",upcoming_drives=upcoming_drives, closed_drives=closed_drives,current_company=current_company)
 
 @company_bp.route("/create-drive",methods=[HTTPMethod.POST])
 def create_drive():
@@ -44,7 +51,7 @@ def create_drive():
     job_desc=request.form.get(PlacementDriveEnum.JOB_DESC.value)
     eligibility_criteria=request.form.get(PlacementDriveEnum.ELIGIBILITY_CRITERIA.value)
     deadline_raw = request.form.get(PlacementDriveEnum.APPLICATION_DEADLINE.value)
-
+    ctc=request.form.get(PlacementDriveEnum.CTC.value)
     application_deadline = datetime.strptime(
         deadline_raw, "%Y-%m-%dT%H:%M"
     )
@@ -69,7 +76,8 @@ def create_drive():
         job_title=job_title,
         job_desc=job_desc,
         eligibility_criteria=eligibility_criteria,
-        application_deadline=application_deadline
+        application_deadline=application_deadline,
+        ctc=ctc
 
     )
 
@@ -78,3 +86,52 @@ def create_drive():
 
     return redirect(url_for("company.dashboard"))
     
+
+@company_bp.route("/update-applicant-status", methods=[HTTPMethod.POST])
+def update_applicant_status():
+
+    application_id = request.form.get("application_id")
+    status = request.form.get("status")
+
+    application = Application.query.get_or_404(application_id)
+
+    application.status = status
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@company_bp.route("/close-drive", methods=[HTTPMethod.POST])
+def close_drive():
+    drive_id=request.form.get('drive_id')
+    drive=PlacementDrive.query.get_or_404(drive_id)
+
+    drive.status=DriveApprovalStatusEnum.CLOSED.value
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@company_bp.route("/update-drive/<int:id>", methods=["POST"])
+def update_drive(id):
+
+    drive = PlacementDrive.query.get_or_404(id)
+
+    deadline = request.form.get("application_deadline")
+    ctc = request.form.get("ctc")
+    status = request.form.get("status")
+
+    if deadline:
+        drive.application_deadline = datetime.strptime(deadline, "%Y-%m-%d").date()
+
+    if ctc:
+        drive.ctc = ctc
+
+    if status:
+        drive.status = status
+
+    db.session.commit()
+
+    return redirect(url_for("company.dashboard"))

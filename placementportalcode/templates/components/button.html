@@ -1,6 +1,6 @@
-{% macro action_button(url, text, color="primary",toggle=None,target=None) %}
+{% macro action_button(url, text, color="primary",toggle=None,target=None,disabled=False) %}
 <a href="{{ url }}"
-   class="btn btn-sm custom-btn btn-{{ color }}"
+   class="btn btn-sm custom-btn btn-{{ color }} {% if disabled %}disabled{% endif %}"
    {% if toggle %} data-bs-toggle="{{ toggle }}" {% endif %}
    {% if target %} data-bs-target="{{ target }}" {% endif %}>
     {{ text }}

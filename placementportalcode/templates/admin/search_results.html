@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "components/button.html" import action_button %}
+{% from "components/post_button.html" import action_post_button %}
+{% from "components/comman_table.html" import render_table %}
+{% from "components/modal.html" import render_modal %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+
+<h2>Search Results for "{{ query }}"</h2>
+
+<hr>
+{% call render_table(["Sr No.","Student Name","Student ID"],"Students") %}
+{% for student in search_students %}
+<tr>
+<td>{{ loop.index }}</td>
+<td>{{ student.name }}</td>
+<td>{{ student.id }}</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="3" class="text-center text-muted">
+No students found
+</td>
+</tr>
+{% endfor %}
+{% endcall %}
+<hr>
+
+
+{% call render_table(["Sr No.","Company Name","Company ID"],"Companies") %}
+{% for company in search_companies %}
+<tr>
+<td>{{ loop.index }}</td>
+<td>{{ company.company_name }}</td>
+<td>{{ company.company_id }}</td>
+</tr>
+{% else %}
+<tr>
+<td colspan="3" class="text-center text-muted">
+No companies found
+</td>
+</tr>
+{% endfor %}
+{% endcall %}
+
+{% endblock %}

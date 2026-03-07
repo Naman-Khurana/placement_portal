@@ -1,15 +1,167 @@
 {% from "components/comman_table.html" import render_table %}
 
+
 {% from "components/button.html" import action_button %}
+{% from "components/post_button.html" import action_post_button %}
+
+{% from "components/list_row.html" import list_row %}
+
 {% extends 'base.html'%}
 
 {% from "components/modal.html" import render_modal %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 {%endblock%}
 {% block title %}
 Company Dashboard
 {%endblock%}
+
+
+
+
+
+
+
+
+
+{% block content%}
+
+<div class="header-bar d-flex justify-content-between align-items-center">
+
+    <h5 class="mb-0">Welcome {{current_company.company_name}}</h5>
+    <div>
+        {% if current_company.approval_status=='pending' %}
+        {{action_button("#","ADMIN APPROVAL PENDING","danger")}}
+        {%elif current_company.approval_status=='blacklisted'%}
+
+        {{action_button("#","COMPANY PROFILE BLACKLISTED","danger")}}
+        {%else%}
+
+        {{action_button("#","Create Drive +","success",toggle="modal",target="#createNewDrive")}}
+        {%endif%}
+
+
+
+
+        {{action_button(url_for("auth.logout"),"Logout","light")}}
+    </div>
+</div>
+
+
+
+<section class="section-box">
+    {% call render_table( ["Sr No.", "Drive Name","Status", "Actions"],"Upcoming Drives") %}
+
+    {% for drive in upcoming_drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>{{drive.status}}</td>
+        <td>
+            {#{ action_button(url_for('drive.details', id=drive.drive_id), "View details", "primary") }#}
+            {#{ action_button(url_for('drive.details', id=drive.drive_id), "Mark as complete", "success") }#}
+            {#{% if drive.status == "APPROVED" %}#}
+            {% if current_company.approval_status == 'approved' %}
+            {{ action_button(
+            "#",
+            "View Details",
+            "primary",
+            toggle="modal",
+            target="#driveApplications" ~ drive.drive_id
+            ) }}
+            {{ action_post_button(
+            url_for("company.close_drive", id=drive.drive_id),
+            "Mark as complete",
+            "success",
+            name='drive_id',
+            value=drive.drive_id
+            ) }}
+            {% endif %}
+        </td>
+
+    </tr>
+    {% endfor %}
+
+    {% endcall %}
+
+
+
+
+
+    {% call render_table(["Sr No.", "Drive Name", "Total Applicants",'Update'],"Closed Drives") %}
+
+    {% for drive in closed_drives %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ drive.job_title }}</td>
+        <td>
+            {{drive.applications|length}}
+        </td>
+        <td> {{ action_button(
+            "#",
+            "Update",
+            "primary",
+            toggle="modal",
+            target="#updateDrive" ~ drive.drive_id
+            ) }}</td>
+    </tr>
+    {% endfor %}
+
+    {% endcall %}
+
+
+</section>
+
+
+{% for drive in closed_drives %}
+
+{% call render_modal("updateDrive" ~ drive.drive_id, "modal-lg", title="Update Drive") %}
+
+<form method="POST" action="{{ url_for('company.update_drive', id=drive.drive_id) }}">
+
+    <div class="mb-3">
+        <label class="form-label">Application Deadline</label>
+        <input 
+            type="date"
+            name="application_deadline"
+            class="form-control"
+            value="{{ drive.application_deadline.strftime('%Y-%m-%d') if drive.application_deadline else '' }}"
+            required
+        >
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">CTC</label>
+        <input 
+            type="number"
+            name="ctc"
+            class="form-control"
+            value="{{ drive.ctc }}"
+            
+        >
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="approved" {{ "selected" if drive.status == "approved" }}>Approved</option>
+            <option value="closed" {{ "selected" if drive.status == "closed" }}>Closed</option>
+        </select>
+    </div>
+
+    <button class="btn btn-success">
+        Update Drive
+    </button>
+
+</form>
+
+{% endcall %}
+
+{% endfor %}
+
+
+
 
 
 {% call render_modal("createNewDrive", "modal-lg") %}
@@ -34,6 +186,11 @@ Company Dashboard
         </div>
 
         <div class="form-group">
+            <label>CTC</label>
+            <input type="text" name="ctc" required>
+        </div>
+
+        <div class="form-group">
             <label>Eligibility Criteria</label>
             <input type="text" name="eligibility_criteria" required>
         </div>
@@ -54,64 +211,121 @@ Company Dashboard
 {% endcall %}
 
 
-
-
-{% block content%}
-
-<div class="header-bar d-flex justify-content-between align-items-center">
-
-    <h5 class="mb-0">Welcome Organization</h5>
-    <div>
-        {{action_button("#","Create Drive +","success",toggle="modal",target="#createNewDrive")}}
-        {{action_button(url_for("auth.logout"),"Logout","light")}}
-    </div>
-</div>
-
-
-
-{% call render_table( ["Sr No.", "Drive Name","Status", "Actions"],"Upcoming Drives") %}
-
 {% for drive in upcoming_drives %}
-<tr>
-    <td>{{ loop.index }}</td>
-    <td>{{ drive.job_title }}</td>
-    <td>{{drive.status}}</td>
-    <td>
-        {#{ action_button(url_for('drive.details', id=drive.drive_id), "View details", "primary") }#}
-        {#{ action_button(url_for('drive.details', id=drive.drive_id), "Mark as complete", "success") }#}
-        {#{% if drive.status == "APPROVED" %}#}
-            {{ action_button(
-                url_for("auth.login", id=drive.drive_id),
-                "View Details",
-                "primary"
-            ) }}
-            {{ action_button(
-                url_for("auth.login", id=drive.drive_id),
-                "Mark as complete",
-                "success"
-            ) }}
-       {# {% endif %}#}
-    </td>
 
-</tr>
-{% endfor %}
+{% call render_modal("driveApplications" ~ drive.drive_id, "modal-lg",title=drive.drive_name) %}
+
+<main>
+    <h1>Update Applications for Drive : {{drive.drive_name}}</h1>
+    <br>
+
+    <h4>Job Title : {{drive.job_title}} </h4>
+
+
+
+
+    <div style="max-height:350px; overflow-y:auto;">
+
+
+        {% call render_table(["Sr No.", "Student Name", "Actions"],"Recieved Applications") %}
+        {% for application in drive.applications %}
+
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{application.student.name}}</td>
+            {%if application.student.department %}
+            <div><b>Department: </b> {{ application.student.department }}</div>
+            {%endif%}
+            <td>
+                {{ action_button(
+                "#",
+                "Review application",
+                "primary",
+                toggle="modal",
+                target="#studentApplication" ~ application.student.id
+                ) }}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+
+
+        {% endcall %}
+
+    </div>
+
+
+
+
+</main>
 
 {% endcall %}
 
+{% for application in drive.applications %}
+{% call render_modal("studentApplication" ~ application.student.id , "modal-lg",title="Student Application") %}
 
-{% call render_table(["Sr No.", "Drive Name", "Actions"],"Closed Drives") %}
+<h3>Student Name: {{ application.student.name }}</h3>
 
-{% for drive in closed_drives %}
-<tr>
-    <td>{{ loop.index }}</td>
-    <td>{{ drive.job_title }}</td>
-    <td>
-        {{ action_button(url_for('auth.login', id=drive.drive_id), "Update", "primary") }}
-    </td>
-</tr>
-{% endfor %}
+<br>
+<div><b>Drive: </b> {{ application.drive.drive_name }}</div>
+
+<div><b>Job Title:</b> {{ application.drive.job_title }}</div>
+
+
+<br>
+
+
+
+<form method="POST" action="{{ url_for('company.update_applicant_status' ) }}">
+
+    <input type="hidden" name="application_id" value="{{ application.application_id }}">
+    <div class="d-flex flex-column gap-3">
+        <div class="d-flex justify-content-start align-items-center gap-3">
+
+            {% if application.student.resume_path %}
+            <a href="{{ url_for('static', filename=application.student.resume_path) }}" target="_blank"
+                class="btn btn-secondary">
+                View Resume
+            </a>
+            {% else %}
+            <span class="text-muted">No Resume Uploaded</span>
+            {% endif %}
+
+            <div class="d-flex align-items-center justify-content-end gap-2">
+                <label class="form-label mb-0">Application Status</label>
+
+                <select name="status" class="form-select" style="width:200px;">
+                    <option value="shortlisted">Shortlist</option>
+                    <option value="rejected">Reject</option>
+                    <option value="hired">Hire</option>
+                    <option value="waitlisted">Waitlist</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Update Status
+        </button>
+
+    </div>
+
+</form>
+
 
 {% endcall %}
+
+{%endfor%}
+
+
+
+{%endfor%}
+
+
+
+
+
 
 
 

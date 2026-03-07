@@ -17,7 +17,6 @@
     <h1 class="mb-0">{{company.company_name}}</h1>
     <div>
 
-        {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory")}}
         {{action_button(url_for("auth.logout"),"Logout","light")}}
     </div>
 </div>
@@ -44,7 +43,7 @@
         target="#driveDetails" ~ drive.drive_id
         ) }}
     </section>
-  
+
     {% else %}
 
     {#<div class="text-muted mt-2">
@@ -74,11 +73,35 @@
 
 <br>
 
-<form method="POST" action="{{ url_for('student.dashboard') }}">
+<form method="POST" action="{{ url_for('student.apply_drive' ,student_id=student_id,drive_id=drive.drive_id) }}">
 
+
+    <input type="hidden" name="student_id" value="{{ student_id }}">
+    <input type="hidden" name="drive_id" value="{{ drive.drive_id }}">
+
+    <input type="hidden" name="company_id" value="{{ company.company_id }}">
+
+    {% if drive.drive_id in rejected_application_ids%}
+    <button type="submit" class="btn btn-danger w-100" disabled>
+        Rejected
+    </button>
+    
+    {% elif drive.drive_id in shortlistedOrHired_application_ids %}
+    <button type="submit" class="btn btn-success w-100" disabled>
+        Shortlisted/Hired
+    </button>
+
+    {% elif drive.drive_id in applied_drive_ids %}
+    <button type="submit" class="btn btn-primary w-100" disabled>
+        Already Applied
+    </button>
+
+    {% else %}
     <button type="submit" class="btn btn-success w-100">
         Apply
     </button>
+
+    {%endif%}
 
 </form>
 

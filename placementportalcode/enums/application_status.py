@@ -5,3 +5,5 @@ class ApplicationStatusEnum(enum.Enum):
     SHORTLISTED='shortlisted'
     SELECTED='selected'
     REJECTED='rejected'
+    WAITLISTED='waitlisted'
+    HIRED='hired'
