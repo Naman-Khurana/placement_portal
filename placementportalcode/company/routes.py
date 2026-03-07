@@ -135,3 +135,29 @@ def update_drive(id):
     db.session.commit()
 
     return redirect(url_for("company.dashboard"))
+
+@company_bp.route("/edit-profile", methods=["POST"])
+def edit_profile():
+
+    company_id=request.form.get('company_id')
+    if not company_id:
+        return redirect(url_for("company.dashboard"))
+    
+    company=Company.query.get_or_404(company_id)
+    
+
+    hr_contact = request.form.get("hr_contact")
+    company_website = request.form.get("company_website")
+    company_name = request.form.get("company_name")
+
+    if hr_contact:
+        company.hr_contact=hr_contact
+    if company_website:
+        company.company_website=company_website
+    if company_name:
+        company.company_name=company_name
+   
+
+    db.session.commit()
+
+    return redirect(url_for("company.dashboard"))

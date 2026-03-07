@@ -31,6 +31,7 @@ Company Dashboard
 
     <h5 class="mb-0">Welcome {{current_company.company_name}}</h5>
     <div>
+        {{action_button("#","Edit Profile","primary",toggle="modal",target="#editCompanyProfile")}}
         {% if current_company.approval_status=='pending' %}
         {{action_button("#","ADMIN APPROVAL PENDING","danger")}}
         {%elif current_company.approval_status=='blacklisted'%}
@@ -47,6 +48,38 @@ Company Dashboard
         {{action_button(url_for("auth.logout"),"Logout","light")}}
     </div>
 </div>
+
+
+{% call render_modal("editCompanyProfile" , "modal-lg", title="Edit Company Profile") %}
+
+<form method="POST" action="{{ url_for('company.edit_profile') }}">
+
+     <input type="hidden" name="company_id" value="{{ current_company.company_id }}">
+    <div class="mb-3">
+        <label class="form-label">Hr Contact Email / Username</label>
+        <input type="text" name="hr_contact" class="form-control"
+            value="{{ current_company.hr_contact if current_company.hr_contact else '' }}"
+            required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Company Website</label>
+        <input type="text" name="company_website" class="form-control" value="{{ current_company.company_website }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Company Name</label>
+        <input type="text" name="company_name" class="form-control" value="{{ current_company.company_name }}">
+    </div>
+
+
+    <button class="btn btn-success">
+        Update Profile
+    </button>
+
+</form>
+
+{% endcall %}
 
 
 
@@ -122,31 +155,21 @@ Company Dashboard
 
     <div class="mb-3">
         <label class="form-label">Application Deadline</label>
-        <input 
-            type="date"
-            name="application_deadline"
-            class="form-control"
+        <input type="date" name="application_deadline" class="form-control"
             value="{{ drive.application_deadline.strftime('%Y-%m-%d') if drive.application_deadline else '' }}"
-            required
-        >
+            required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">CTC</label>
-        <input 
-            type="number"
-            name="ctc"
-            class="form-control"
-            value="{{ drive.ctc }}"
-            
-        >
+        <input type="number" name="ctc" class="form-control" value="{{ drive.ctc }}">
     </div>
 
     <div class="mb-3">
         <label class="form-label">Status</label>
         <select name="status" class="form-select">
-            <option value="approved" {{ "selected" if drive.status == "approved" }}>Approved</option>
-            <option value="closed" {{ "selected" if drive.status == "closed" }}>Closed</option>
+            <option value="approved" {{ "selected" if drive.status=="approved" }}>Approved</option>
+            <option value="closed" {{ "selected" if drive.status=="closed" }}>Closed</option>
         </select>
     </div>
 
