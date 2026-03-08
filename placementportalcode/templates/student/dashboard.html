@@ -20,6 +20,10 @@ Student Dashboard
 <div class="header-bar d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Welcome {{student.name}}</h5>
     <div>
+        {%if not student.eligible %}
+        {{action_button("#","STUDENT PROFILE BLACKLISTED","danger" )}}
+
+        {%endif%}
         {{action_button("#","Edit Profile","light",toggle="modal",target="#editProfile" )}}
         {{action_button("#","History","light",toggle="modal",target="#studentApplicationHistory" )}}
         {{action_button(url_for("auth.logout"),"Logout","light")}}

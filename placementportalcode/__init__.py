@@ -1,4 +1,4 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,redirect,url_for
 from .extensions import db
 from placementportalcode.auth.routes import auth_bp
 from placementportalcode.admin.routes import admin_bp
@@ -31,7 +31,6 @@ def create_app():
 
     @app.route("/")
     def home():
-        return render_template("landing_page.html")
-    
+        return redirect(url_for('auth.login'))
     return app
 

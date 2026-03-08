@@ -140,6 +140,13 @@ Admin Dashboard
             "danger",
             name="action",
             value="reject")}}
+            {{ action_button(
+            "#",
+            "View Details",
+            "primary",
+            toggle="modal",
+            target="#driveDetails" ~ drive.drive_id
+            ) }}
 
         </td>
     </tr>
@@ -188,6 +195,13 @@ Admin Dashboard
                     toggle="modal",
                     target="#driveDetails" ~ drive.drive_id
                     ) }}
+                    {{ action_post_button(
+                    url_for('admin.update_drive_status', drive_id=drive.drive_id),
+                    "Reject",
+                    "danger",
+                    name="action",
+                    value="reject")}}
+
 
 
 
@@ -292,7 +306,7 @@ Admin Dashboard
 
 
 
-{% for drive in ongoing_drives %}
+{% for drive in ongoing_drives.all() + requested_drives.all() %}
 
 {% call render_modal("driveDetails" ~ drive.drive_id, "modal-lg",title= drive.company.company_name) %}
 

@@ -36,15 +36,15 @@ def company_drives(student_id,company_id):
     if not company:
         return redirect(url_for('student.dashboard'))
     now= datetime.now()
-    current_drives=PlacementDrive.query.filter(PlacementDrive.status==DriveApprovalStatusEnum.APPROVED.value, PlacementDrive.application_deadline>=now)
+    current_drives=PlacementDrive.query.filter(PlacementDrive.company_id==company_id,PlacementDrive.status==DriveApprovalStatusEnum.APPROVED.value, PlacementDrive.application_deadline>=now)
     rejected_applications=Application.query.filter(Application.student_id==student_id,Application.status=='rejected')
     shortlistedOrHired_applications=Application.query.filter(Application.student_id==student_id,Application.status.in_(["shortlisted", "hired"]))
     applications = Application.query.filter(Application.student_id==student_id,Application.status=='applied')
-
+    student=User.query.get(student_id)
     rejected_application_ids={app.drive_id for app in rejected_applications}
     applied_drive_ids= {app.drive_id for app in applications}
     shortlistedOrHired_application_ids={app.drive_id for app in shortlistedOrHired_applications}
-    return render_template('student/company-details.html',company=company,current_drives=current_drives,student_id=student_id,applied_drive_ids=applied_drive_ids,rejected_application_ids=rejected_application_ids,shortlistedOrHired_application_ids=shortlistedOrHired_application_ids)
+    return render_template('student/company-details.html',company=company,current_drives=current_drives,student=student,applied_drive_ids=applied_drive_ids,rejected_application_ids=rejected_application_ids,shortlistedOrHired_application_ids=shortlistedOrHired_application_ids)
 
 @student_bp.route('/<int:student_id>/<int:drive_id>/application', methods=[HTTPMethod.POST])
 def apply_drive(student_id,drive_id):

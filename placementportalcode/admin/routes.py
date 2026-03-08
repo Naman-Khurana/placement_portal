@@ -30,7 +30,7 @@ def dashboard():
     requested_drives=PlacementDrive.query.filter(PlacementDrive.status==DriveApprovalStatusEnum.PENDING.value)
     rejected_drives=PlacementDrive.query.filter(PlacementDrive.status==DriveApprovalStatusEnum.REJECT.value)
 
-    ongoing_drives=PlacementDrive.query.filter(PlacementDrive.application_deadline <now,PlacementDrive.status==DriveApprovalStatusEnum.APPROVED.value)
+    ongoing_drives=PlacementDrive.query.filter(PlacementDrive.status=='approved',PlacementDrive.status==DriveApprovalStatusEnum.APPROVED.value)
     student_applications=Application.query.all()
 
    
@@ -54,7 +54,7 @@ def update_company_status(company_id):
     return redirect(url_for("admin.dashboard"))
 
 
-@admin_bp.route("/drive/update_status",methods=[HTTPMethod.POST])
+@admin_bp.route("/drive/<int:drive_id>/update_status",methods=[HTTPMethod.POST])
 def update_drive_status(drive_id):
     drive=PlacementDrive.query.get_or_404(drive_id)
     action=request.form.get('action')
@@ -136,8 +136,8 @@ def search():
     return render_template(
         "admin/search_results.html",
         query=query,
-        students=students,
-        companies=companies
+        search_students=students,
+        search_companies=companies
     )
     
     

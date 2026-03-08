@@ -95,6 +95,13 @@ Company Dashboard
             {#{ action_button(url_for('drive.details', id=drive.drive_id), "View details", "primary") }#}
             {#{ action_button(url_for('drive.details', id=drive.drive_id), "Mark as complete", "success") }#}
             {#{% if drive.status == "APPROVED" %}#}
+             {{ action_button(
+            "#",
+            "Update",
+            "primary",
+            toggle="modal",
+            target="#updateDrive" ~ drive.drive_id
+            ) }}
             {% if current_company.approval_status == 'approved' %}
             {{ action_button(
             "#",
@@ -137,7 +144,18 @@ Company Dashboard
             "primary",
             toggle="modal",
             target="#updateDrive" ~ drive.drive_id
-            ) }}</td>
+            ) }}
+            {% if drive.status=='approved'%}
+             {{ action_post_button(
+            url_for("company.close_drive", id=drive.drive_id),
+            "Mark as complete",
+            "success",
+            name='drive_id',
+            value=drive.drive_id
+            ) }}
+            {%endif%}
+        </td>
+            
     </tr>
     {% endfor %}
 
@@ -147,7 +165,7 @@ Company Dashboard
 </section>
 
 
-{% for drive in closed_drives %}
+{% for drive in closed_drives + upcoming_drives %}
 
 {% call render_modal("updateDrive" ~ drive.drive_id, "modal-lg", title="Update Drive") %}
 
@@ -236,10 +254,10 @@ Company Dashboard
 
 {% for drive in upcoming_drives %}
 
-{% call render_modal("driveApplications" ~ drive.drive_id, "modal-lg",title=drive.drive_name) %}
+{% call render_modal("driveApplications" ~ drive.drive_id, "modal-lg",title=drive.company.company_name) %}
 
 <main>
-    <h1>Update Applications for Drive : {{drive.drive_name}}</h1>
+    <h1> {{drive.drive_name}}</h1>
     <br>
 
     <h4>Job Title : {{drive.job_title}} </h4>
@@ -252,7 +270,7 @@ Company Dashboard
 
         {% call render_table(["Sr No.", "Student Name", "Actions"],"Recieved Applications") %}
         {% for application in drive.applications %}
-
+        {% if application.student.eligible %}
         <tr>
             <td>{{ loop.index }}</td>
             <td>{{application.student.name}}</td>
@@ -269,6 +287,7 @@ Company Dashboard
                 ) }}
             </td>
         </tr>
+        {%endif%}
 
         {% endfor %}
 

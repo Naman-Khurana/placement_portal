@@ -73,19 +73,23 @@
 
 <br>
 
-<form method="POST" action="{{ url_for('student.apply_drive' ,student_id=student_id,drive_id=drive.drive_id) }}">
+<form method="POST" action="{{ url_for('student.apply_drive' ,student_id=student.id,drive_id=drive.drive_id) }}">
 
 
-    <input type="hidden" name="student_id" value="{{ student_id }}">
+    <input type="hidden" name="student_id" value="{{ student.id }}">
     <input type="hidden" name="drive_id" value="{{ drive.drive_id }}">
 
     <input type="hidden" name="company_id" value="{{ company.company_id }}">
 
-    {% if drive.drive_id in rejected_application_ids%}
+    {% if not student.eligible %}
+    <button type="submit" class="btn btn-dark w-100" disabled>
+        Blacklisted
+    </button>
+    {% elif drive.drive_id in rejected_application_ids%}
     <button type="submit" class="btn btn-danger w-100" disabled>
         Rejected
     </button>
-    
+
     {% elif drive.drive_id in shortlistedOrHired_application_ids %}
     <button type="submit" class="btn btn-success w-100" disabled>
         Shortlisted/Hired
